@@ -50,6 +50,27 @@ eqn_sim_compare<-function(sf,sim_n_entries,plot_title) {
     theme(legend.position="bottom")
 }
 
+########################################
+# SECTION 3.1
+
+tmp_sq<-seq(0,5,0.01)
+tmpdf<-data.frame(x=tmp_sq,exp=pexp(tmp_sq,rate=2),lnorm1=plnorm(tmp_sq,meanlog=log(0.5)-0.5,sdlog=1),lnorm2=plnorm(tmp_sq,meanlog=log(0.5)-0.78125,sdlog=1.25)) %>%
+  pivot_longer(cols=-x,names_to="Distribution",values_to="value") %>%
+  mutate(Distribution=recode(Distribution,"exp"="exponential(2)",
+                             "lnorm1"="lognormal(-1.19,1)",
+                             "lnorm2"="lognormal(-1.47,1.25)"))
+
+png("fig2.png",height=3,width=4.5,units="in",res=600)
+print(
+tmpdf %>%
+  ggplot(aes(x=x,y=value,colour=Distribution)) +
+  geom_line() +
+  theme_bw() +
+  xlab("Total service time") +
+  ylab("Probability distribution")
+)
+dev.off()
+
 
 ########################################
 # SECTION 3.2
@@ -74,7 +95,7 @@ plt_3_2_dat<-bind_rows(
   mutate(type=factor(type,levels=c("Formulae","Simulation (r)","Simulation (p)")))
 
 
-png("fig2.png",height=3,width=5,unit="in",res=600)
+png("fig3.png",height=3,width=5,unit="in",res=600)
 print(plt_3_2_dat %>%
   ggplot(aes(x=value,colour=type)) +
     stat_ecdf(data = plt_3_2_dat %>% filter(type=="Formulae"), linetype=1) +
@@ -272,7 +293,7 @@ saveRDS(sim_res_exp_lnorm_lnorm2,file="res_3_3.R")
 
 #sim_res_exp_lnorm_lnorm2<-readRDS("res_3_3.R")
 
-png("fig3.png",units="in",height=5,width=6,res=600)
+png("fig4.png",units="in",height=5,width=6,res=600)
 print(
   sim_res_exp_lnorm_lnorm2 %>%
     ggplot(aes(x=time)) +
@@ -334,7 +355,7 @@ drops_method3_ln2<-drops_method3 %>% filter(dist=="lognormal(-1.47,1.25)") %>% .
 ########################################
 # SECTION 4.1
 
-png("fig4.png",units="in",height=2,width=2.5,res=600)
+png("fig5.png",units="in",height=2,width=2.5,res=600)
 print(
   data.frame(x=seq(-10,0,0.01),y=200/2*(1+sin(-(seq(-10,0,0.01))*pi*2))) %>%
     ggplot(aes(x=x,y=y)) +
@@ -424,7 +445,7 @@ inhomog_lnorm2<-bind_rows(inhomog_sim_lnorm2,inhomog_eqn_lnorm2)
 
 plt_4_2_dat<-bind_rows(inhomog_expo,inhomog_lnorm,inhomog_lnorm2)
 
-png("fig5.png",height=3,width=5,unit="in",res=600)
+png("fig6.png",height=3,width=5,unit="in",res=600)
 print(
   ggplot(plt_4_2_dat,aes(x=partial,colour=type)) +
     stat_ecdf(data = plt_4_2_dat %>% filter(type=="Formulae"), linetype=1) +
@@ -653,7 +674,7 @@ saveRDS(sim_res_exp_lnorm_lnorm2,file="res_4_3.R")
 
 #sim_res_exp_lnorm_lnorm2<-readRDS("res_4_3.R")
 
-png("fig6.png",units="in",height=5,width=6,res=600)
+png("fig7.png",units="in",height=5,width=6,res=600)
 print(
   sim_res_exp_lnorm_lnorm2 %>%
     #group_by(init_method,dist) %>%
